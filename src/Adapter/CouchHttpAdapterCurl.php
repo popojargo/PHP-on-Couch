@@ -22,13 +22,17 @@ namespace PHPOnCouch\Adapter;
 use Exception;
 use InvalidArgumentException;
 
+$config= include(dirname(__DIR__).DIRECTORY_SEPARATOR.'Config.php');
+
 /**
  * Description of CouchAdapterCurl
  *
  * @author alexis
  */
 class CouchHttpAdapterCurl extends AbstractCouchHttpAdapter implements CouchHttpAdapterInterface {
-
+    
+    
+    
     /**
      * We need a socket to use the continuous query.
      * @var CouchHttpAdapterSocket 
@@ -66,6 +70,7 @@ class CouchHttpAdapterCurl extends AbstractCouchHttpAdapter implements CouchHttp
      * @return resource CURL request resource
      */
     protected function buildRequest($method, $url, $data, $contentType) {
+        global $config;
         $http = curl_init($url);
         $httpHeaders = ['Accept: application/json,text/html,text/plain,*/*'];
         if (is_object($data) || is_array($data)) {
@@ -88,6 +93,7 @@ class CouchHttpAdapterCurl extends AbstractCouchHttpAdapter implements CouchHttp
         }
         $httpHeaders[] = 'Expect: ';
         curl_setopt($http, CURLOPT_HTTPHEADER, $httpHeaders);
+        curl_setopt($http,CURLOPT_SSL_VERIFYPEER,$config['CURLOPT_SSL_VERIFYPEER']);
         return $http;
     }
 

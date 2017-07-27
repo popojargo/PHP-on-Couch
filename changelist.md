@@ -1,6 +1,16 @@
 # Changelist
 
 ---
+#### [2.0.4]
+##### Added
+ - Configuration
+    + Added Config.php at the root to configure the library
+    + Added default adapter in configuration
+ - Curl Adapter
+    + Added SSL_VERIFYPEER configuration
+
+
+---
 #### [2.0.3]
 ##### Added
 - CouchClient
