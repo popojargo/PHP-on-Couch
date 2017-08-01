@@ -3,32 +3,37 @@
 namespace PHPOnCouch;
 
 
+use Dotenv\Dotenv;
+
 class Config
 {
 
     private static $instance = null;
-
+    private static $adapterKey = 'HTTP_ADAPTER';
     private $config;
 
     private function __construct()
     {
-        $env = EnvUtil::getInstance();
+        $env = new Dotenv(__DIR__);
+        $env->load();
+        $env->required(SELF::$adapterKey)->allowedValues(['curl', 'socket']);
 
-        //Adapter validation
-        $adapter = $env->getEnv('ADAPTER');
-        $allowedAdapters = ['curl', 'socket'];
-        if (empty($adapter) || !array_search($adapter, $allowedAdapters))
-            $adapter = 'curl';
+        //Get curl options
+        $curlOpts = [];
+        foreach ($_ENV as $key => $val) {
+            if (substr($key, 0, 7) == 'CURLOPT')
+                $curlOpts[$key] = $val;
+        }
 
         $this->config = [
-            'ADAPTER' => $adapter,
-            'curl' => $env->getEnvWithPrefix('CURL_', true) ?: []
+            SELF::$adapterKey => $_ENV[SELF::$adapterKey],
+            'curl' => $curlOpts
         ];
     }
 
     public function getAdapter()
     {
-        return $this->config['ADAPTER'];
+        return $this->config[SELF::$adapterKey];
     }
 
 
