@@ -40,6 +40,13 @@ class EnvUtil
                     $pair = explode('=', $line);
                     $key = trim($pair[0]);
                     $value = $pair[1];
+
+                    //Boolean parsing.
+                    if ($value == "true" || $value == "TRUE")
+                        $value = true;
+                    else if ($value == "false" || $value == "FALSE")
+                        $value = false;
+
                     $result[$key] = $value;
                 }
                 fclose($fh);
