@@ -103,7 +103,7 @@ class EnvUtilTest extends PHPUnit_Framework_TestCase
         $path = join(DIRECTORY_SEPARATOR, [__DIR__, '_config', 'test.env']);
 
 
-        $fun = new \ReflectionMethod($this->env, 'getEnvVarsFromFile');
+        $fun = new \ReflectionMethod($this->env, '_getEnvVarsFromFile');
         $fun->setAccessible(true);
 
         //Valid example
@@ -115,4 +115,5 @@ class EnvUtilTest extends PHPUnit_Framework_TestCase
         $this->assertEmpty($emptyResult);
 
     }
+
 }
