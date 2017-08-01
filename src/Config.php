@@ -4,6 +4,7 @@ namespace PHPOnCouch;
 
 
 use Dotenv\Dotenv;
+use Dotenv\Exception\InvalidPathException;
 
 class Config
 {
@@ -15,18 +16,22 @@ class Config
     private function __construct()
     {
         $env = new Dotenv(__DIR__);
-        $env->load();
+        try {
+            $env->load();
+        } catch (InvalidPathException $e) {
+            //The file is not available :(
+        }
         $env->required(SELF::$adapterKey)->allowedValues(['curl', 'socket']);
 
         //Get curl options
         $curlOpts = [];
-        foreach ($_ENV as $key => $val) {
+        foreach ($_SERVER as $key => $val) {
             if (substr($key, 0, 7) == 'CURLOPT')
                 $curlOpts[$key] = $val;
         }
 
         $this->config = [
-            SELF::$adapterKey => $_ENV[SELF::$adapterKey],
+            SELF::$adapterKey => getenv(SELF::$adapterKey),
             'curl' => $curlOpts
         ];
     }
