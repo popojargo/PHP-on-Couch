@@ -16,8 +16,23 @@ class EnvUtil
     private function __construct()
     {
         $envFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env';
-        if (file_exists($envFile)) {
-            $fh = fopen($envFile, 'r');
+        $vars = $this->_getEnvVarsFromFile($envFile);
+        $this->loadVars($vars);
+
+    }
+
+    public function loadVars(array $vars)
+    {
+        foreach ($vars as $key => $val) {
+            $this->setEnv($key, $val);
+        }
+    }
+
+    private function _getEnvVarsFromFile($path)
+    {
+        $result = [];
+        if (file_exists($path)) {
+            $fh = fopen($path, 'r');
             if ($fh) {
                 while (($line = fgets($fh)) != false) {
                     if (substr(trim($line), 0, 1) == '#' || strpos('=', $line) < 0)
@@ -25,11 +40,12 @@ class EnvUtil
                     $pair = explode('=', $line);
                     $key = trim($pair[0]);
                     $value = $pair[1];
-                    $this->setEnv($key, $value);
+                    $result[$key] = $value;
                 }
                 fclose($fh);
             }
         }
+        return $result;
     }
 
     /**
