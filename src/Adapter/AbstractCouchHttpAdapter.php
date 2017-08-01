@@ -91,7 +91,7 @@ abstract class AbstractCouchHttpAdapter implements CouchHttpAdapterInterface
 	 * @param string $cookie
 	 *            the session cookie ( example : AuthSession=Y291Y2g6NENGNDgzNz )
 	 *
-	 * @return \PHPOnCouch\Couch
+	 * @return \PHPOnCouch\Adapter\AbstractCouchHttpAdapter
 	 */
 	public function setSessionCookie($cookie)
 	{

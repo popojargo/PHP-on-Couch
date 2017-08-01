@@ -22,7 +22,7 @@ namespace PHPOnCouch\Adapter;
 use Exception;
 use InvalidArgumentException;
 
-$config= include(dirname(__DIR__).DIRECTORY_SEPARATOR.'Config.php');
+
 
 /**
  * Description of CouchAdapterCurl
@@ -38,6 +38,7 @@ class CouchHttpAdapterCurl extends AbstractCouchHttpAdapter implements CouchHttp
      * @var CouchHttpAdapterSocket 
      */
     protected $socketAdapter;
+    
 
     protected function initSocketAdapter() {
         $this->socketAdapter = new CouchHttpAdapterSocket($this->getDsn(), $this->getOptions());
@@ -70,7 +71,6 @@ class CouchHttpAdapterCurl extends AbstractCouchHttpAdapter implements CouchHttp
      * @return resource CURL request resource
      */
     protected function buildRequest($method, $url, $data, $contentType) {
-        global $config;
         $http = curl_init($url);
         $httpHeaders = ['Accept: application/json,text/html,text/plain,*/*'];
         if (is_object($data) || is_array($data)) {
@@ -93,7 +93,6 @@ class CouchHttpAdapterCurl extends AbstractCouchHttpAdapter implements CouchHttp
         }
         $httpHeaders[] = 'Expect: ';
         curl_setopt($http, CURLOPT_HTTPHEADER, $httpHeaders);
-        curl_setopt($http,CURLOPT_SSL_VERIFYPEER,$config['CURLOPT_SSL_VERIFYPEER']);
         return $http;
     }
 

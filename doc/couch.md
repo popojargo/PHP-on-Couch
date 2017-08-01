@@ -17,6 +17,7 @@
     + [**initAdapter($options())**](#initadapteroptions)
     + [**getAdapter()**](#getadapter)
     + [**setAdapter(CouchHttpAdapterInterface $adapter)**](#setadaptercouchhttpadapterinterface-adapter)
+- [**Curl Adapter**](#curl-adapter)
 
 ## Summary
 
@@ -151,3 +152,7 @@ $couch = new Couch("http://localhost:5984");
 $adapter = new CouchHttpAdapterSocket([]);
 $couch->setAdapter($adapter);
 ```
+
+### Curl Adapter
+
+You can configure

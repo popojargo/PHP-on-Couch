@@ -31,7 +31,6 @@ use PHPOnCouch\Adapter\CouchHttpAdapterInterface;
 use PHPOnCouch\Adapter\CouchHttpAdapterCurl;
 use PHPOnCouch\Adapter\CouchHttpAdapterSocket;
 
-$config = include('Config.php');
 
 /**
  * couch class
@@ -39,7 +38,8 @@ $config = include('Config.php');
  * basics to implement JSON / REST / HTTP CouchDB protocol
  *
  */
-class Couch {
+class Couch
+{
 
     /**
      * @var string database source name
@@ -60,9 +60,10 @@ class Couch {
      * class constructor
      *
      * @param string $dsn CouchDB Data Source Name
-     * 	@param array $options Couch options
+     * @param array $options Couch options
      */
-    public function __construct($dsn, $options = []) {
+    public function __construct($dsn, $options = [])
+    {
         $this->dsn = preg_replace('@/+$@', '', $dsn);
         $this->options = $options;
         $this->dsnParsed = parse_url($this->dsn);
@@ -73,9 +74,10 @@ class Couch {
 
     /**
      * Returns and init if necessary, the CouchHttpAdapter
-     * @returns PHPOnCouch\Adapter\CouchHttpAdapterInterface
+     * @returns \PHPOnCouch\Adapter\CouchHttpAdapterInterface
      */
-    public function getAdapter() {
+    public function getAdapter()
+    {
         if (!isset($this->adapter)) {
             $this->adapter = $this->initAdapter($this->options);
         }
@@ -84,24 +86,41 @@ class Couch {
 
     /**
      * Set a new adapter to the Couch Class.
-     * @param \PHPOnCouch\Adapter\CouchHttpAdapterInterface $adapter    The adapter to set
+     * @param \PHPOnCouch\Adapter\CouchHttpAdapterInterface $adapter The adapter to set
      */
-    public function setAdapter(CouchHttpAdapterInterface $adapter) {
+    public function setAdapter(CouchHttpAdapterInterface $adapter)
+    {
         $this->adapter = $adapter;
     }
 
     /**
      * Init the HTTP Adapter with cURL if available.
-     * @param Array $options    An array of options.
-     * @return \PHPOnCouch\CouchHttpAdapterSocket
+     * @param array $options An array of options.
+     * @return \PHPOnCouch\Adapter\CouchHttpAdapterSocket
      */
-    public function initAdapter($options) {
-        global $config;
+    public function initAdapter($options)
+    {
         if (!isset($options))
             $options = $this->options;
-        if ($config['DEFAULT_ADAPTER'] == 'CURL' && function_exists('curl_init'))
+
+        $config = Config::getInstance();
+
+        if ($config->getAdapter() == 'curl' && function_exists('curl_init')) {
+            //We add curl options from config
+            if (!array_key_exists('curl', $options) || !is_array($options['curl']))
+                $options['curl'] = [];
+            $options['curl'] = array_merge($config->getCurlOpts(), $options['curl']);
+
+            //Convert options to int
+            $newOpts = [];
+            foreach ($options['curl'] as $key => $val) {
+                if (is_string($key))
+                    $key = constant($key);
+                $newOpts[$key] = $val;
+            }
+            $options['curl'] = $newOpts;
             $adapter = new CouchHttpAdapterCurl($this->dsn, $options);
-        else
+        } else
             $adapter = new CouchHttpAdapterSocket($this->dsn, $options);
         $this->adapter = $adapter;
         return $adapter;
@@ -112,27 +131,30 @@ class Couch {
      *
      * @return string DSN
      */
-    public function dsn() {
+    public function dsn()
+    {
         return $this->dsn;
     }
 
     /**
      * returns the options array
      *
-     * @return string DSN
+     * @return array containing the option
      */
-    public function options() {
+    public function options()
+    {
         return $this->options;
     }
 
     /**
      * set the session cookie to send in the headers
-     * @param string $cookie the session cookie 
+     * @param string $cookie the session cookie
      * ( example : AuthSession=Y291Y2g6NENGNDgzNz )
      *
      * @return \PHPOnCouch\Couch
      */
-    public function setSessionCookie($cookie) {
+    public function setSessionCookie($cookie)
+    {
         return $this->getAdapter()->setSessionCookie($cookie);
     }
 
@@ -140,7 +162,8 @@ class Couch {
      * Get the current session cookie set to the class.
      * @return String The cookie
      */
-    public function getSessionCookie() {
+    public function getSessionCookie()
+    {
         return $this->getAdapter()->getSessionCookie();
     }
 
@@ -150,15 +173,17 @@ class Couch {
      * if $part parameter is empty, returns dns array
      *
      * @param string $part part to return
-     * @return string DSN part
+     * @return string|array DSN part
      */
-    public function dsnPart($part = null) {
+    public function dsnPart($part = null)
+    {
         if (!$part) {
             return $this->dsnParsed;
         }
         if (isset($this->dsnParsed[$part])) {
             return $this->dsnParsed[$part];
         }
+        return $this->dsnParsed;
     }
 
     /**
@@ -166,18 +191,19 @@ class Couch {
      * the array contains keys :
      * status_code : the HTTP status code returned by the server
      * status_message : the HTTP message related to the status code
-     * body : the response body (if any). If CouchDB server response 
+     * body : the response body (if any). If CouchDB server response
      * Content-Type is application/json
      *        the body will by json_decode()d
      *
      * @static
      * @param string|boolean $rawData data sent back by the server
-     * @param boolean $jsonAsArray is true, the json response will be 
+     * @param boolean $jsonAsArray is true, the json response will be
      * decoded as an array. Is false, it's decoded as an object
      * @return array CouchDB response
      * @throws InvalidArgumentException
      */
-    public static function parseRawResponse($rawData, $jsonAsArray = false) {
+    public static function parseRawResponse($rawData, $jsonAsArray = false)
+    {
         if (!strlen($rawData))
             throw new InvalidArgumentException("no data to parse");
         $httpHeader = "HTTP/1.1 100 Continue\r\n\r\n";
@@ -208,12 +234,13 @@ class Couch {
      * @param string $url URL to fetch
      * @param array $parameters additionnal parameters to send with the request
      * @param string|array|object $data request body
-     * @param string $contentType the content type of the sent data 
+     * @param string $contentType the content type of the sent data
      *  (defaults to application/json)
      *
      * @return string|false server response on success, false on error
      */
-    public function query($method, $url, $parameters = [], $data = null, $contentType = null) {
+    public function query($method, $url, $parameters = [], $data = null, $contentType = null)
+    {
         return $this->getAdapter()->query($method, $url, $parameters, $data, $contentType);
     }
 
@@ -226,7 +253,8 @@ class Couch {
      *
      * @return string server response
      */
-    public function storeFile($url, $file, $contentType) {
+    public function storeFile($url, $file, $contentType)
+    {
         return $this->getAdapter()->storeFile($url, $file, $contentType);
     }
 
@@ -239,7 +267,8 @@ class Couch {
      *
      * @return string server response
      */
-    public function storeAsFile($url, $data, $contentType) {
+    public function storeAsFile($url, $data, $contentType)
+    {
         return $this->getAdapter()->storeAsFile($url, $data, $contentType);
     }
 
@@ -265,7 +294,8 @@ class Couch {
      *
      * @throws Exception|InvalidArgumentException|CouchException|CouchNoResponseException
      */
-    public function continuousQuery($callable, $method, $url, $parameters = [], $data = null) {
+    public function continuousQuery($callable, $method, $url, $parameters = [], $data = null)
+    {
         return $this->getAdapter()->continuousQuery($callable, $method, $url, $parameters, $data);
     }
 
