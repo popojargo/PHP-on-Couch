@@ -20,3 +20,6 @@ setup.sh
 
 #Configuration files
 .env
+
+#Doc build files
+doc/_build
