@@ -140,6 +140,10 @@ class CouchClient extends Couch
      */
     public function __construct($dsn, $dbname, $options = [])
     {
+        if (array_key_exists('username', $options) && array_key_exists('password', $options)) {
+            $dsn = $this->buildDSNFromUserPass($dsn, $options['username'], $options['password']);
+        }
+
         // in the case of a cookie based authentification we have to remove user and password infos from the DSN
         if (array_key_exists('cookie_auth', $options) && $options['cookie_auth']) {
             $parts = parse_url($dsn);
@@ -172,6 +176,17 @@ class CouchClient extends Couch
         } else
             $this->useDatabase($dbname);
         parent::__construct($dsn, $options);
+    }
+
+    protected function buildDSNFromUserPass($dsn, $username, $password)
+    {
+        $parts = parse_url($dsn);
+        $user = urlencode($username);
+        $pass = urlencode($password);
+        $dsn = $parts['scheme'] . '://' . $user . ':' . $pass . '@' . $parts['host'];
+        $dsn .= array_key_exists('port', $parts) ? ':' . $parts['port'] : '';
+        $dsn .= array_key_exists('path', $parts) ? $parts['path'] : '';
+        return $dsn;
     }
 
     /**

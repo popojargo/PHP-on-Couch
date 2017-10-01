@@ -40,11 +40,11 @@ abstract class AbstractCouchHttpAdapter implements CouchHttpAdapterInterface
 	 * @var array allowed HTTP methods for REST dialog
 	 */
 	protected $httpMethods = [
-		SELF::METHOD_PUT,
-		SELF::METHOD_POST,
-		SELF::METHOD_GET,
-		SELF::METHOD_DELETE,
-		SELF::METHOD_COPY
+		self::METHOD_PUT,
+		self::METHOD_POST,
+		self::METHOD_GET,
+		self::METHOD_DELETE,
+		self::METHOD_COPY
 	];
 
 	/**

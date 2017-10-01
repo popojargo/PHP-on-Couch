@@ -164,7 +164,7 @@ class CouchAdmin
         $user->name = $login;
         $user->type = "user";
         $user->roles = $roles;
-        $user->_id = SELF::USER_PREFIX . $login;
+        $user->_id = self::USER_PREFIX . $login;
         return $client->storeDoc($user);
     }
 
@@ -185,7 +185,7 @@ class CouchAdmin
 
         try {
             $client = new CouchClient($this->client->dsn(), $this->usersdb);
-            $doc = $client->getDoc(SELF::USER_PREFIX . $encodedLogin);
+            $doc = $client->getDoc(self::USER_PREFIX . $encodedLogin);
             $client->deleteDoc($doc);
         } catch (CouchException $e) {
             if ($e->getCode() !== 404)
@@ -231,7 +231,7 @@ class CouchAdmin
         $user->name = $login;
         $user->type = "user";
         $user->roles = $roles;
-        $user->_id = SELF::USER_PREFIX . $login;
+        $user->_id = self::USER_PREFIX . $login;
         $client = new CouchClient($this->client->dsn(), $this->usersdb, $this->client->options());
         return $client->storeDoc($user);
     }
@@ -250,7 +250,7 @@ class CouchAdmin
             throw new InvalidArgumentException("Login can't be empty");
         }
         $client = new CouchClient($this->client->dsn(), $this->usersdb);
-        $doc = $client->getDoc(SELF::USER_PREFIX . $login);
+        $doc = $client->getDoc(self::USER_PREFIX . $login);
         return $client->deleteDoc($doc);
     }
 
@@ -267,7 +267,7 @@ class CouchAdmin
             throw new InvalidArgumentException("Login can't be empty");
         }
         $client = new CouchClient($this->client->dsn(), $this->usersdb, $this->client->options());
-        return $client->getDoc(SELF::USER_PREFIX . $login);
+        return $client->getDoc(self::USER_PREFIX . $login);
     }
 
     /**
@@ -282,7 +282,7 @@ class CouchAdmin
         if ($includeDocs) {
             $client->include_docs(true);
         }
-        return $client->startkey(SELF::USER_PREFIX)->endkey(substr(SELF::USER_PREFIX, 0, -1) . "?")->getAllDocs()->rows;
+        return $client->startkey(self::USER_PREFIX)->endkey(substr(self::USER_PREFIX, 0, -1) . "?")->getAllDocs()->rows;
     }
 
     /**

@@ -23,6 +23,7 @@ use Exception;
 use InvalidArgumentException;
 use PHPOnCouch\Exceptions\CouchException;
 use PHPOnCouch\Exceptions\ConflictException;
+use PHPOnCouch\Exceptions\CouchNoResponseException;
 use PHPOnCouch\Exceptions\ForbiddenException;
 use PHPOnCouch\Exceptions\NotFoundException;
 use PHPOnCouch\Exceptions\UnauthorizedException;

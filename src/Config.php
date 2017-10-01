@@ -21,7 +21,7 @@ class Config
         } catch (InvalidPathException $e) {
             //The file is not available :(
         }
-        $env->required(SELF::$adapterKey)->allowedValues(['curl', 'socket']);
+        $env->required(self::$adapterKey)->allowedValues(['curl', 'socket']);
 
         //Get curl options
         $curlOpts = [];
@@ -31,14 +31,14 @@ class Config
         }
 
         $this->config = [
-            SELF::$adapterKey => getenv(SELF::$adapterKey),
+            self::$adapterKey => getenv(self::$adapterKey),
             'curl' => $curlOpts
         ];
     }
 
     public function getAdapter()
     {
-        return $this->config[SELF::$adapterKey];
+        return $this->config[self::$adapterKey];
     }
 
 
@@ -50,9 +50,9 @@ class Config
 
     public static function getInstance()
     {
-        if (SELF::$instance == null)
-            SELF::$instance = new Config();
-        return SELF::$instance;
+        if (self::$instance == null)
+            self::$instance = new Config();
+        return self::$instance;
     }
 }
 
