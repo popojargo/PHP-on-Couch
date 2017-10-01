@@ -21,6 +21,10 @@ class Config
         } catch (InvalidPathException $e) {
             //The file is not available :(
         }
+        //Default
+        if (empty(getenv(self::$adapterKey)))
+            putenv(self::$adapterKey . "=curl");
+
         $env->required(self::$adapterKey)->allowedValues(['curl', 'socket']);
 
         //Get curl options
