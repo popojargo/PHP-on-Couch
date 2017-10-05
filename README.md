@@ -6,8 +6,7 @@
 
 ## Table of content
 - [Introduction](#introduction)
-- [What's new](#whats-new)
-- [Changes](#changes)
+- [Changes](#recent-changes)
 - [Installation and testing](#installation-and-testing)
 - [Components and documentation](#components-and-documentation)
 - [Quick-start guide](#quick-start-guide)

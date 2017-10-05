@@ -5,4 +5,4 @@ Overview
     :maxdepth: 2
 
     intro.rst
-    changelist/index.rst
+    CHANGELOG.md
